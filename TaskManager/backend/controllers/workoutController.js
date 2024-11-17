@@ -37,6 +37,7 @@ const createWorkout = async (req, res) => {
   if (!load) {
     emptyFields.push("load");
   }
+
   if (emptyFields.length > 0) {
     return res
       .status(400)
@@ -74,8 +75,11 @@ const updateWorkout = async (req, res) => {
   const workout = await Workout.findByIdAndUpdate(
     { _id: id },
     {
-      ...req.body,
-    }
+      $set: {
+        ...req.body,
+      },
+    },
+    { new: true, runValidators: true }
   );
   if (!workout) {
     return res.status(404).json({ error: "No such workout" });
@@ -90,3 +94,4 @@ module.exports = {
   deleteWorkout,
   updateWorkout,
 };
+
