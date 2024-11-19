@@ -5,13 +5,25 @@ import Delete from '../assets/images/delete.png'
 
 //  dates 
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
+import { useAuthContext } from '../hooks/useAuthContext'
 
 
 const WorkoutDetails = ({workout}) => {
-  const {dispatch} = React.useContext(WorkoutsContext)
+  const {dispatch} = React.useContext(WorkoutsContext);
+  const {user} = useAuthContext(WorkoutsContext);
   const handleclick = async () => {
+
+    if(!user){
+      return
+    }
+
+
      const response = await fetch(`http://localhost:5000/api/workouts/${workout._id}`, {
        method: 'DELETE',
+       headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${user.token}`
+      }
      })
     
      const json = await response.json()
