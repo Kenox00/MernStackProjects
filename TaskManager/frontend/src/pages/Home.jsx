@@ -8,7 +8,8 @@
  * @returns {JSX.Element} The JSX element representing
  * the home page of the application.
  */
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
+import axios from "axios"
 
 
 // components
@@ -20,6 +21,7 @@ import { useAuthContext } from "../hooks/useAuthContext"
 const Home = () => {
   const { workouts, dispatch } = useWorkOutsContext()
   const { user } = useAuthContext()
+  const [error, setError] = useState(null)
 
   /**
    * This effect fetches the workouts from the database
@@ -28,23 +30,22 @@ const Home = () => {
    */
   useEffect(() => {
     const fetchWorkouts = async () => {
-      const response = await fetch('http://127.0.0.1:5000/api/workouts',{
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.token}`
-        }
-      })
-      const json = await response.json()
-
-      if (response.ok) {
-        dispatch({type: 'SET_WORKOUTS', payload: json})
+      try {
+        const response = await axios.get('http://localhost:5000/api/workouts', {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${user.token}`
+          }
+        })
+        dispatch({type: 'SET_WORKOUTS', payload: response.data})
+      } catch (err) {
+        setError(err.response?.data?.error || 'Failed to fetch workouts')
       }
     }
     if (user) {
-    fetchWorkouts();
-  }
+      fetchWorkouts()
+    }
   }, [dispatch, user])
-
   return (
     <div className="home">
       <div className="workouts">
@@ -52,6 +53,8 @@ const Home = () => {
         {workouts && workouts.map(workout => (
           <WorkoutDetails workout={workout} key={workout._id} />
         ))}
+        {/* Display an error message if there is an error */}
+        {error && <p style={{color: 'red'}}>{error}</p>}
       </div>
       {/* Render the WorkoutForm component */}
       <WorkoutForm />
@@ -60,3 +63,4 @@ const Home = () => {
 }
 
 export default Home
+

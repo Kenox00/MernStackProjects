@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useWorkOutsContext } from "../hooks/useWorkOutContext"
 import { useAuthContext } from "../hooks/useAuthContext";
-
+import axios from "axios";
 const WorkoutForm = () => {
   const { dispatch } = useWorkOutsContext();
   const [title, setTitle] = useState("");
@@ -20,27 +20,25 @@ const WorkoutForm = () => {
     }
 
     const workout = { title, load, reps };
-    const response = await fetch("http://127.0.0.1:5000/api/workouts", {
-      method: "POST",
-      body: JSON.stringify(workout),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${user.token}`
-      },
-    })
-    const json  = await response.json();
-    if (!response.ok) {
-      setError(json.error);
-      setEmptyFields(json.emptyFields);
-    }
-    if (response.ok) {
+
+    try {
+      const response = await axios.post("http://127.0.0.1:5000/api/workouts", workout, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.token}`
+        },
+      })
+      const json = response.data;
       setError(null);
       setTitle("");
       setLoad("");
       setReps("");
       setEmptyFields([]);
-     console.log("new workout added", json);
-     dispatch({type: 'CREATE_WORKOUT', payload: json})
+      console.log("new workout added", json);
+      dispatch({type: 'CREATE_WORKOUT', payload: json})
+    } catch (error) {
+      setError(error.response.data.error);
+      setEmptyFields(error.response.data.emptyFields);
     }
   };
   return (

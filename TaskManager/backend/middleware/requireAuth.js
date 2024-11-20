@@ -1,9 +1,5 @@
-/**
- * middleware to check if user is authenticated
- * @param {Object} req - request object
- * @param {Object} res - response object
- * @param {Function} next - next middleware to call
- */
+const User = require('../model/userModel');
+const jwt = require('jsonwebtoken')
 const requireAuth = async (req, res, next) => {
     // check if headers contain authorization token
     const { authorization } = req.headers;

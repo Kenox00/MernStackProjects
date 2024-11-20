@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const userModel = require("./userModel");
 
 const Schema = mongoose.Schema;
 
@@ -16,6 +17,10 @@ const workoutSchema = new Schema(
       type: Number,
       required: true,
     },
+    user:{
+      type:String,
+      required:true
+    }
   },
   { timestamps: true }
 );

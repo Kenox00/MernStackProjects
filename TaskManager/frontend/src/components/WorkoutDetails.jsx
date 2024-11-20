@@ -1,6 +1,7 @@
 import React from 'react'
 import { WorkoutsContext } from '../context/WorkoutContext'
 import Delete from '../assets/images/delete.png'
+import axios from 'axios'
 
 
 //  dates 
@@ -10,26 +11,28 @@ import { useAuthContext } from '../hooks/useAuthContext'
 
 const WorkoutDetails = ({workout}) => {
   const {dispatch} = React.useContext(WorkoutsContext);
-  const {user} = useAuthContext(WorkoutsContext);
+  const {user} = useAuthContext();
+
   const handleclick = async () => {
 
     if(!user){
       return
     }
 
+    try {
+      const response = await axios.delete(`http://localhost:5000/api/workouts/${workout._id}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.token}`
+        }
+      });
 
-     const response = await fetch(`http://localhost:5000/api/workouts/${workout._id}`, {
-       method: 'DELETE',
-       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${user.token}`
+      if (response.status === 200) {
+        dispatch({ type: 'DELETE_WORKOUT', payload: response.data });
       }
-     })
-    
-     const json = await response.json()
-   if(response.ok){
-     dispatch({type: 'DELETE_WORKOUT', payload: json})
-   }
+    } catch (error) {
+      console.error('Error deleting workout:', error);
+    }
   }
   return (
     <div className="workout-details">
