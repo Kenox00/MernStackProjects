@@ -46,7 +46,7 @@ userSchema.statics.signup = async function(email, password) {
     return user
   }
 
-  // static signup method
+  // static login method
 
   userSchema.statics.login = async function(email, password) {
 
