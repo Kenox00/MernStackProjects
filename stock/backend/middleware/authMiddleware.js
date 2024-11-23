@@ -1,30 +1,18 @@
-// backend/middleware/authMiddleware.js
+// File: middleware/authMiddleware.js
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const JWT_SECRET = 'your_jwt_secret_key';
 
-const protect = async (req, res, next) => {
-  let token;
-  if (req.headers.authorization?.startsWith('Bearer')) {
-    try {
-      token = req.headers.authorization.split(' ')[1];
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = await User.findById(decoded.id).select('-password');
-      next();
-    } catch (error) {
-      res.status(401).json({ message: 'Not authorized' });
-    }
-  }
-  if (!token) {
-    res.status(401).json({ message: 'Not authorized, no token' });
-  }
-};
+const authenticate = (req, res, next) => {
+  const token = req.header('Authorization')?.replace('Bearer ', '');
+  if (!token) return res.status(401).json({ error: 'Access denied. No token provided.' });
 
-const admin = (req, res, next) => {
-  if (req.user && req.user.isAdmin) {
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded; // Attach user info to the request
     next();
-  } else {
-    res.status(401).json({ message: 'Not authorized as admin' });
+  } catch (err) {
+    res.status(400).json({ error: 'Invalid token.' });
   }
 };
 
-module.exports = { protect, admin };
+module.exports = authenticate;

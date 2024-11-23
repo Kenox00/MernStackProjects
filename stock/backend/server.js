@@ -1,21 +1,25 @@
-// backend/server.js
-require('dotenv').config();
+// File: server.js
 const express = require('express');
-const cors = require('cors');
 const connectDB = require('./config/db');
-const authRoutes = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');
-const stockRoutes = require('./routes/stockRoutes');
+const userRoutes = require('./routes/userRoutes');
+const cors = require('cors');
 
 const app = express();
-connectDB();
-
+// Enable CORS
 app.use(cors());
+// Middleware
 app.use(express.json());
 
-app.use('/api/auth', authRoutes);
-app.use('/api/products', productRoutes);
-app.use('/api/stock', stockRoutes);
+// Connect to Database
+connectDB();
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// Routes
+app.use('/api/products', productRoutes);
+app.use('/api/users', userRoutes);
+
+// Start Server
+const PORT = 4000;
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});

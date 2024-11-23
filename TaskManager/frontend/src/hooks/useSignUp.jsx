@@ -41,7 +41,7 @@ export const useSignUp = () => {
         });
   
         const json = await response.json();
-        console.log('Response data:', json); // Debug line to show received data
+        console.log('Response data:', json);  data
   
         if (!response.ok) {
           setIsLoading(false);
