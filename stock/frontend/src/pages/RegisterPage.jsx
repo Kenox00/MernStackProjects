@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { registerUser } from "../services/api";
+import { registerUser, loginUser } from "../services/api";
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({ username: "", password: "" });
@@ -15,6 +15,9 @@ const RegisterPage = () => {
     try {
       const response = await registerUser(formData);
       setMessage(response.data.message);
+      const loginResponse = await loginUser(formData);
+      localStorage.setItem("token", loginResponse.data.token);
+      window.location.href = "/products";
     } catch (error) {
       setMessage(error.response?.data?.error || "Error registering user.");
     }

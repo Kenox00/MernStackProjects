@@ -5,68 +5,50 @@ import {
   stockOutProduct,
   deleteProduct,
   updateProduct,
+  createProduct,
 } from "../services/api";
 
 const ProductPage = () => {
   const [products, setProducts] = useState([]);
   const [message, setMessage] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState(""); // "stock-in", "stock-out", or "update"
+  const [modalType, setModalType] = useState(""); // "stock-in", "stock-out", "update", "create"
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [formValues, setFormValues] = useState({ name: "", stock: 0 }); // Form for update
+  const [formValues, setFormValues] = useState({ name: "", stock: 0 }); // Form for update/create
   const [stockQuantity, setStockQuantity] = useState(0); // Stock value entered for stock in/out
   const token = localStorage.getItem("token");
 
-  // Fetch products from API
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await getProducts(token);
-        setProducts(response.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
     fetchProducts();
-  }, [token]);
+  }, []);
 
-  // Handle Stock Update (Stock In or Stock Out)
-  const handleStockUpdate = async () => {
+  const fetchProducts = async () => {
     try {
-      const data = { stock: stockQuantity };
-      if (modalType === "stock-in") {
-        await stockInProduct(selectedProduct._id, data, token);
-        setMessage("Stock increased successfully.");
-      } else if (modalType === "stock-out") {
-        await stockOutProduct(selectedProduct._id, data, token);
-        setMessage("Stock reduced successfully.");
-      }
-      // Refresh product list
+      const response = await getProducts(token);
+      setProducts(response.data);
+    } catch (error) {
+      console.error(error);
+      setMessage("Error fetching products.");
+    }
+  };
+
+  // Handle Create Product
+  const handleCreate = async () => {
+    try {
+      await createProduct(formValues, token);
+      setMessage("Product created successfully.");
       fetchProducts();
       closeModal();
     } catch (error) {
-      setMessage(error.response?.data?.error || "Error updating stock.");
+      setMessage(error.response?.data?.error || "Error creating product.");
     }
   };
 
-  // Handle Delete Product
-  const handleDelete = async (productId) => {
-    try {
-      await deleteProduct(productId, token);
-      setMessage("Product deleted successfully.");
-      // Refresh product list
-      fetchProducts();
-    } catch (error) {
-      setMessage(error.response?.data?.error || "Error deleting product.");
-    }
-  };
-
-  // Handle Update Product
+  // Add the missing handleUpdate function
   const handleUpdate = async () => {
     try {
       await updateProduct(selectedProduct._id, formValues, token);
       setMessage("Product updated successfully.");
-      // Refresh product list
       fetchProducts();
       closeModal();
     } catch (error) {
@@ -74,33 +56,55 @@ const ProductPage = () => {
     }
   };
 
-  // Open Modal
-  const openModal = (product, type) => {
+  // Add the missing handleDelete function
+  const handleDelete = async (productId) => {
+    if (window.confirm("Are you sure you want to delete this product?")) {
+      try {
+        await deleteProduct(productId, token);
+        setMessage("Product deleted successfully.");
+        fetchProducts();
+      } catch (error) {
+        setMessage(error.response?.data?.error || "Error deleting product.");
+      }
+    }
+  };
+
+  // Add the missing stock in/out handlers
+  const handleStockIn = async () => {
+    try {
+      await stockInProduct(selectedProduct._id, { quantity: stockQuantity }, token);
+      setMessage("Stock added successfully.");
+      fetchProducts();
+      closeModal();
+    } catch (error) {
+      setMessage(error.response?.data?.error || "Error adding stock.");
+    }
+  };
+
+  const handleStockOut = async () => {
+    try {
+      await stockOutProduct(selectedProduct._id, { quantity: stockQuantity }, token);
+      setMessage("Stock removed successfully.");
+      fetchProducts();
+      closeModal();
+    } catch (error) {
+      setMessage(error.response?.data?.error || "Error removing stock.");
+    }
+  };
+
+  const openModal = (product = null, type) => {
     setSelectedProduct(product);
     setModalType(type);
-    if (type === "update") {
-      setFormValues({ name: product.name, stock: product.stock });
-    }
+    setFormValues(product || { name: "", stock: 0 });
     setShowModal(true);
   };
 
-  // Close Modal
   const closeModal = () => {
     setShowModal(false);
     setSelectedProduct(null);
     setStockQuantity(0);
     setFormValues({ name: "", stock: 0 });
     setModalType("");
-  };
-
-  // Fetch Products
-  const fetchProducts = async () => {
-    try {
-      const response = await getProducts(token);
-      setProducts(response.data);
-    } catch (error) {
-      console.error(error);
-    }
   };
 
   return (
@@ -122,16 +126,11 @@ const ProductPage = () => {
         </div>
       </nav>
 
-      {/* Success/Error Message */}
       {message && <p className="text-green-500 mb-4">{message}</p>}
 
-      {/* Product Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {products.map((product) => (
-          <div
-            key={product._id}
-            className="bg-white rounded-lg shadow-md p-4 relative"
-          >
+          <div key={product._id} className="bg-white rounded-lg shadow-md p-4 relative">
             <h2 className="text-xl font-bold mb-2">{product.name}</h2>
             <p className="text-gray-700 mb-4">Stock: {product.stock}</p>
             <div className="flex justify-between">
@@ -159,62 +158,57 @@ const ProductPage = () => {
                 onClick={() => handleDelete(product._id)}
                 className="text-gray-600 hover:text-red-500"
               >
-               <i className="fas fa-trash"></i>
+                <i className="fas fa-trash"></i>
               </button>
             </div>
           </div>
         ))}
+        <div
+          onClick={() => openModal(null, "create")}
+          className="bg-gray-100 rounded-lg shadow-md p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-200"
+        >
+          <i className="fas fa-plus text-4xl text-green-500"></i>
+          <p className="mt-2 text-gray-600">Add Product</p>
+        </div>
       </div>
 
-      {/* Modal */}
-      {showModal && selectedProduct && (
+      {showModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded shadow-md w-96">
-            {modalType === "update" ? (
+            {modalType === "create" && (
               <>
-                <h3 className="text-xl font-bold mb-4">Update Product</h3>
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    handleUpdate();
-                  }}
-                >
-                  {/* Product Name */}
+                <h3 className="text-xl font-bold mb-4">Add New Product</h3>
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  handleCreate();
+                }}>
                   <div className="mb-4">
                     <label className="block font-semibold mb-1">Name</label>
                     <input
                       type="text"
                       value={formValues.name}
-                      onChange={(e) =>
-                        setFormValues({ ...formValues, name: e.target.value })
-                      }
+                      onChange={(e) => setFormValues({ ...formValues, name: e.target.value })}
                       required
                       className="w-full p-2 border rounded"
                     />
                   </div>
-
-                  {/* Stock Quantity */}
                   <div className="mb-4">
                     <label className="block font-semibold mb-1">Stock</label>
                     <input
                       type="number"
                       min="0"
                       value={formValues.stock}
-                      onChange={(e) =>
-                        setFormValues({ ...formValues, stock: e.target.value })
-                      }
+                      onChange={(e) => setFormValues({ ...formValues, stock: +e.target.value })}
                       required
                       className="w-full p-2 border rounded"
                     />
                   </div>
-
-                  {/* Submit and Cancel Buttons */}
                   <div className="flex justify-end">
                     <button
                       type="submit"
                       className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mr-2"
                     >
-                      Confirm
+                      Add
                     </button>
                     <button
                       type="button"
@@ -226,40 +220,83 @@ const ProductPage = () => {
                   </div>
                 </form>
               </>
-            ) : (
+            )}
+
+            {modalType === "update" && (
+              <>
+                <h3 className="text-xl font-bold mb-4">Update Product</h3>
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  handleUpdate();
+                }}>
+                  <div className="mb-4">
+                    <label className="block font-semibold mb-1">Name</label>
+                    <input
+                      type="text"
+                      value={formValues.name}
+                      onChange={(e) => setFormValues({ ...formValues, name: e.target.value })}
+                      required
+                      className="w-full p-2 border rounded"
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label className="block font-semibold mb-1">Stock</label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={formValues.stock}
+                      onChange={(e) => setFormValues({ ...formValues, stock: +e.target.value })}
+                      required
+                      className="w-full p-2 border rounded"
+                    />
+                  </div>
+                  <div className="flex justify-end">
+                    <button
+                      type="submit"
+                      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mr-2"
+                    >
+                      Update
+                    </button>
+                    <button
+                      type="button"
+                      onClick={closeModal}
+                      className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              </>
+            )}
+
+            {(modalType === "stock-in" || modalType === "stock-out") && (
               <>
                 <h3 className="text-xl font-bold mb-4">
-                  {modalType === "stock-in" ? "Stock In" : "Stock Out"} -{" "}
-                  {selectedProduct.name}
+                  {modalType === "stock-in" ? "Add Stock" : "Remove Stock"}
                 </h3>
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    handleStockUpdate();
-                  }}
-                >
-                  {/* Stock Quantity */}
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  modalType === "stock-in" ? handleStockIn() : handleStockOut();
+                }}>
                   <div className="mb-4">
                     <label className="block font-semibold mb-1">Quantity</label>
                     <input
                       type="number"
                       min="1"
                       value={stockQuantity}
-                      onChange={(e) =>
-                        setStockQuantity(parseInt(e.target.value))
-                      }
+                      onChange={(e) => setStockQuantity(+e.target.value)}
                       required
                       className="w-full p-2 border rounded"
                     />
                   </div>
-
-                  {/* Submit and Cancel Buttons */}
                   <div className="flex justify-end">
                     <button
                       type="submit"
-                      className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mr-2"
+                      className={`${
+                        modalType === "stock-in" ? "bg-blue-500 hover:bg-blue-600" : "bg-red-500 hover:bg-red-600"
+                      } text-white px-4 py-2 rounded mr-2`}
                     >
-                      Confirm
+                      {modalType === "stock-in" ? "Add" : "Remove"}
                     </button>
                     <button
                       type="button"
