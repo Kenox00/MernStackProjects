@@ -32,7 +32,6 @@ const ProductPage = () => {
     }
   };
 
-  // Handle Create Product
   const handleCreate = async () => {
     try {
       await createProduct(formValues, token);
@@ -44,7 +43,6 @@ const ProductPage = () => {
     }
   };
 
-  // Add the missing handleUpdate function
   const handleUpdate = async () => {
     try {
       await updateProduct(selectedProduct._id, formValues, token);
@@ -56,7 +54,6 @@ const ProductPage = () => {
     }
   };
 
-  // Add the missing handleDelete function
   const handleDelete = async (productId) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
@@ -69,10 +66,15 @@ const ProductPage = () => {
     }
   };
 
-  // Add the missing stock in/out handlers
   const handleStockIn = async () => {
     try {
-      await stockInProduct(selectedProduct._id, { quantity: stockQuantity }, token);
+      if (!stockQuantity || isNaN(stockQuantity) || stockQuantity <= 0) {
+        setMessage("Please enter a valid stock quantity.");
+        return;
+      }
+
+      await stockInProduct(selectedProduct._id, { stock: stockQuantity }, token);
+
       setMessage("Stock added successfully.");
       fetchProducts();
       closeModal();
@@ -83,7 +85,12 @@ const ProductPage = () => {
 
   const handleStockOut = async () => {
     try {
-      await stockOutProduct(selectedProduct._id, { quantity: stockQuantity }, token);
+      if (!stockQuantity || isNaN(stockQuantity) || stockQuantity <= 0) {
+        setMessage("Please enter a valid stock quantity.");
+        return;
+      }
+
+      await stockOutProduct(selectedProduct._id, { stock: stockQuantity }, token);
       setMessage("Stock removed successfully.");
       fetchProducts();
       closeModal();
@@ -112,7 +119,7 @@ const ProductPage = () => {
       <nav className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Products</h1>
         <div className="flex items-center">
-          <p className="mr-4">Welcome, {localStorage.getItem("username")}!</p>
+          <p className="mr-4">Welcome, Admin {localStorage.getItem("username")}!</p>
           <button
             onClick={() => {
               localStorage.removeItem("token");
@@ -176,12 +183,14 @@ const ProductPage = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded shadow-md w-96">
             {modalType === "create" && (
-              <>
+              <div>
                 <h3 className="text-xl font-bold mb-4">Add New Product</h3>
-                <form onSubmit={(e) => {
-                  e.preventDefault();
-                  handleCreate();
-                }}>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleCreate();
+                  }}
+                >
                   <div className="mb-4">
                     <label className="block font-semibold mb-1">Name</label>
                     <input
@@ -198,7 +207,9 @@ const ProductPage = () => {
                       type="number"
                       min="0"
                       value={formValues.stock}
-                      onChange={(e) => setFormValues({ ...formValues, stock: +e.target.value })}
+                      onChange={(e) =>
+                        setFormValues({ ...formValues, stock: Number(e.target.value) })
+                      }
                       required
                       className="w-full p-2 border rounded"
                     />
@@ -219,16 +230,18 @@ const ProductPage = () => {
                     </button>
                   </div>
                 </form>
-              </>
+              </div>
             )}
 
             {modalType === "update" && (
-              <>
+              <div>
                 <h3 className="text-xl font-bold mb-4">Update Product</h3>
-                <form onSubmit={(e) => {
-                  e.preventDefault();
-                  handleUpdate();
-                }}>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleUpdate();
+                  }}
+                >
                   <div className="mb-4">
                     <label className="block font-semibold mb-1">Name</label>
                     <input
@@ -245,7 +258,9 @@ const ProductPage = () => {
                       type="number"
                       min="0"
                       value={formValues.stock}
-                      onChange={(e) => setFormValues({ ...formValues, stock: +e.target.value })}
+                      onChange={(e) =>
+                        setFormValues({ ...formValues, stock: Number(e.target.value) })
+                      }
                       required
                       className="w-full p-2 border rounded"
                     />
@@ -266,25 +281,27 @@ const ProductPage = () => {
                     </button>
                   </div>
                 </form>
-              </>
+              </div>
             )}
 
             {(modalType === "stock-in" || modalType === "stock-out") && (
-              <>
+              <div>
                 <h3 className="text-xl font-bold mb-4">
                   {modalType === "stock-in" ? "Add Stock" : "Remove Stock"}
                 </h3>
-                <form onSubmit={(e) => {
-                  e.preventDefault();
-                  modalType === "stock-in" ? handleStockIn() : handleStockOut();
-                }}>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    modalType === "stock-in" ? handleStockIn() : handleStockOut();
+                  }}
+                >
                   <div className="mb-4">
                     <label className="block font-semibold mb-1">Quantity</label>
                     <input
                       type="number"
                       min="1"
                       value={stockQuantity}
-                      onChange={(e) => setStockQuantity(+e.target.value)}
+                      onChange={(e) => setStockQuantity(Number(e.target.value))}
                       required
                       className="w-full p-2 border rounded"
                     />
@@ -293,7 +310,9 @@ const ProductPage = () => {
                     <button
                       type="submit"
                       className={`${
-                        modalType === "stock-in" ? "bg-blue-500 hover:bg-blue-600" : "bg-red-500 hover:bg-red-600"
+                        modalType === "stock-in"
+                          ? "bg-blue-500 hover:bg-blue-600"
+                          : "bg-red-500 hover:bg-red-600"
                       } text-white px-4 py-2 rounded mr-2`}
                     >
                       {modalType === "stock-in" ? "Add" : "Remove"}
@@ -307,7 +326,7 @@ const ProductPage = () => {
                     </button>
                   </div>
                 </form>
-              </>
+              </div>
             )}
           </div>
         </div>
