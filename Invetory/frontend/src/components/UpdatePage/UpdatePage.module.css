@@ -1,0 +1,109 @@
+/* Outer container */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    min-height: 100vh;
+    background-color: #1e1e1e;
+  }
+  
+  /* Card container for the form */
+  .formContainer {
+    width: 100%;
+    max-width: 800px;
+    background-color: #2b2b2b;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    color: #ffffff;
+  }
+  
+  /* Title styling */
+  .title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #ffffff;
+  }
+  
+  /* Form styling */
+  .form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  
+  /* Full-width inputs (for textarea or full-row items) */
+  .formGroupFull {
+    grid-column: span 2;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Input styling */
+  .formGroup {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  label {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #ffffff;
+  }
+  
+  input,
+  textarea {
+    padding: 10px;
+    border: 1px solid #4a4a4a;
+    border-radius: 4px;
+    background-color: #333333;
+    color: #ffffff;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  
+  input:focus,
+  textarea:focus {
+    border-color: #00a3e0;
+  }
+  
+  /* Button group styling */
+  .buttonGroup {
+    grid-column: span 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+  }
+  
+  .backButton,
+  .nextButton {
+    padding: 10px 20px;
+    border: 2px solid #00a3e0;
+    border-radius: 4px;
+    background: none;
+    font-size: 14px;
+    font-weight: bold;
+    color: #00a3e0;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  
+  .backButton:hover {
+    background-color: #333333;
+  }
+  
+  .nextButton {
+    background-color: #00a3e0;
+    color: #ffffff;
+    border: none;
+  }
+  
+  .nextButton:hover {
+    background-color: #007bb3;
+  }

@@ -13,10 +13,10 @@ const app = express();
 app.use(cors());  // Enable CORS for all routes
 app.use(express.json());
 
-app.use((req, res, next) => {
-  console.log(req.path, req.method);
-  next();
-});
+// app.use((req, res, next) => {
+//   console.log(req.path, req.method);
+//   next();
+// });
 
 // Routes
 app.use("/api/workouts", workoutRoutes);

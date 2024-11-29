@@ -204,7 +204,7 @@ const ProductPage = () => {
                   <div className="mb-4">
                     <label className="block font-semibold mb-1">Stock</label>
                     <input
-                      type="number"
+                      type="text"
                       min="0"
                       value={formValues.stock}
                       onChange={(e) =>
@@ -255,7 +255,7 @@ const ProductPage = () => {
                   <div className="mb-4">
                     <label className="block font-semibold mb-1">Stock</label>
                     <input
-                      type="number"
+                      type="text"
                       min="0"
                       value={formValues.stock}
                       onChange={(e) =>
@@ -298,7 +298,7 @@ const ProductPage = () => {
                   <div className="mb-4">
                     <label className="block font-semibold mb-1">Quantity</label>
                     <input
-                      type="number"
+                      type="text"
                       min="1"
                       value={stockQuantity}
                       onChange={(e) => setStockQuantity(Number(e.target.value))}
