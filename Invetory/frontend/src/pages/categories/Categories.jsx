@@ -27,6 +27,24 @@ const Categories = () => {
     fetchCategories();
   }, [user.token]);
 
+  const handleAddCategory = async (categoryName) => {
+    try {
+      const response = await axios.post(
+        'http://localhost:4000/api/category',
+        { name: categoryName }, // Use the correct key
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      );
+      setCategories((prevCategories) => [...prevCategories, response.data]);
+    } catch (error) {
+      console.error('Error creating category:', error.response?.data || error.message);
+    }
+  };
+
   const handleCategoryClick = (categoryName) => {
     navigate(`/categories/${categoryName}/products`);
   };
@@ -43,6 +61,18 @@ const Categories = () => {
           <p>{category.description || 'No description available.'}</p>
         </div>
       ))}
+      <div
+        className={styles.card}
+        onClick={() => {
+          const categoryName = prompt('Enter the name of the new category:');
+          if (categoryName) {
+            handleAddCategory(categoryName);
+          }
+        }}
+      >
+        <h2>Add category</h2>
+        <p>Click here to add a new category</p>
+      </div>
     </div>
   );
 };

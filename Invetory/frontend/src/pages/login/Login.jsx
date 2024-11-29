@@ -3,12 +3,14 @@ import React, { useState } from 'react';
 import styles from './Login.module.css';
 import house from '../../assets/house.png';
 import { useLogin } from '../../hooks/useLogin';
+import {  useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
+  const navigate = useNavigate();
   const { login, error, isLoading } = useLogin();
 
   const handleChange = (e) => {
@@ -17,6 +19,9 @@ const Login = () => {
       [e.target.name]: e.target.value
     });
   };
+  const handleSignup=()=>{
+    navigate('/signup');
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -56,7 +61,7 @@ const Login = () => {
             <button type="submit" disabled={isLoading}>
               {isLoading ? 'Loading...' : 'Login'}
             </button>
-            <button type="button">Sign Up</button>
+            <button type="button" onClick={handleSignup}> Go to Sign Up</button>
           </div>
           {error && <div className={styles.error}>{error}</div>}
         </form>

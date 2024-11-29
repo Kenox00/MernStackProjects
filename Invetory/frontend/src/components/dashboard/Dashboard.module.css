@@ -1,62 +1,112 @@
+.dashboardContainer {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #1e1e1e;
+}
+
+
+/* Container styling */
 .container {
     font-family: Arial, sans-serif;
     text-align: center;
-    background-color: #00a3e0;
-    color: white;
+    background-color: #1e1e1e; /* Updated background color */
+    color: #ffffff; /* White text for better contrast */
     padding: 20px;
-  }
-  
-  .header {
+}
+
+
+/* Header section */
+.header {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 15px;
+    justify-content: space-between;
     margin-bottom: 20px;
-  }
-  
-  .iconLarge {
+}
+
+/* Logo styling */
+.logo {
+    display: flex;
+    gap: 10px;
+    color: #00a3e0; /* Highlight color for logo */
+}
+
+/* Large icon */
+.iconLarge {
     font-size: 60px;
-  }
-  
-  .title {
+}
+
+/* Title styling */
+.title {
     font-size: 24px;
     font-weight: bold;
-  }
-  
-  .content {
+    color: #ffffff; /* Matches the container text color */
+}
+
+/* User information */
+.userInfo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #ffffff; /* Consistent white text */
+}
+
+/* Content grid */
+.content {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 20px;
-    background-color: #a9d8e6;
+    background-color: #2b2b2b; /* Matches the form container background */
     padding: 20px;
     border-radius: 8px;
-  }
-  
-  .card {
+}
+
+/* Card styling */
+.card {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 10px;
-    background-color: white;
-    color: #333;
+    background-color: #333333; /* Darker card background */
+    color: #ffffff; /* White text */
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     cursor: pointer;
     transition: transform 0.2s;
-  }
-  
-  .card:hover {
+}
+
+.card:hover {
     transform: scale(1.05);
-  }
-  
-  .icon {
+    background-color: #1e1e1e; /* Slightly darker on hover */
+}
+
+/* Icon styling */
+.icon {
     font-size: 40px;
     margin-bottom: 10px;
-  }
-  
-  p {
+    color: #00a3e0; /* Highlight color */
+}
+
+/* Paragraph styling */
+p {
     margin: 0;
     font-size: 16px;
     font-weight: bold;
-  }
+    color: #ffffff; /* Consistent white text */
+}
+
+/* Logout button styling */
+.logoutButton {
+    background-color: #00a3e0; /* Primary button color */
+    color: #ffffff; /* White text */
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.logoutButton:hover {
+    background-color: #007bb3; /* Darker blue on hover */
+}

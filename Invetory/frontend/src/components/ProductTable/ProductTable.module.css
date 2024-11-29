@@ -1,69 +1,80 @@
+/* Table container */
 .tableContainer {
-    width: 90%;
-    margin: 20px auto;
-    text-align: center;
-  }
-  
-  .tableTitle {
-    font-size: 24px;
-    margin-bottom: 10px;
-    color: #333;
-  }
-  
-  .productTable {
-    width: 100%;
-    border-collapse: collapse;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    background-color: #ffffff;
-  }
-  
-  .productTable th,
-  .productTable td {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: left;
-  }
-  
-  .productTable th {
-    background-color: #00a3e0;
-    color: white;
-    font-weight: bold;
-    text-align: center;
-  }
-  
-  .productTable tr:nth-child(even) {
-    background-color: #f9f9f9;
-  }
-  
-  .productTable tr:hover {
-    background-color: #f1f1f1;
-  }
-  
-  .productTable td {
-    text-align: center;
-  }
-  .updateButton {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-    margin-right: 5px;
-  }
-  
-  .deleteButton {
-    background-color: #f44336;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-  }
-  
-  .updateButton:hover {
-    background-color: #45a049;
-  }
-  
-  .deleteButton:hover {
-    background-color: #e53935;
-  }
-  
+  width: 90%;
+  margin: 20px auto;
+  text-align: center;
+}
+
+/* Table title styling */
+.tableTitle {
+  font-size: 24px;
+  margin-bottom: 10px;
+  color: #ffffff; /* Matches the title color */
+}
+
+/* Product table styling */
+.productTable {
+  width: 100%;
+  border-collapse: collapse;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background-color: #2b2b2b; /* Matches the form container */
+  color: #ffffff; /* Matches text color */
+}
+
+/* Table header */
+.productTable th {
+  background-color: #00a3e0; /* Highlight color */
+  color: #ffffff; /* Text color */
+  font-weight: bold;
+  text-align: center;
+  padding: 10px;
+}
+
+/* Table rows */
+.productTable td {
+  border: 1px solid #4a4a4a; /* Border matches input borders */
+  padding: 10px;
+  text-align: center;
+}
+
+/* Alternate row styling */
+.productTable tr:nth-child(even) {
+  background-color: #333333; /* Darker alternate row color */
+}
+
+/* Row hover effect */
+.productTable tr:hover {
+  background-color: #1e1e1e; /* Highlight row on hover */
+}
+
+/* Update button styling */
+.updateButton {
+  background-color: #00a3e0; /* Matches primary button color */
+  color: #ffffff;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 4px; /* Button style consistency */
+  transition: background-color 0.3s;
+}
+
+/* Delete button styling */
+.deleteButton {
+  background-color: #f44336; /* Delete button red */
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+/* Update button hover */
+.updateButton:hover {
+  background-color: #007bb3; /* Matches hover color for next button */
+}
+
+/* Delete button hover */
+.deleteButton:hover {
+  background-color: #e53935; /* Slightly darker hover red */
+}

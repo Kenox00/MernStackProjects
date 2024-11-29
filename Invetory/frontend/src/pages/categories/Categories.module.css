@@ -1,34 +1,43 @@
-/* Categories.module.css */
+/* Container for the category cards */
 .container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-    padding: 20px;
-  }
-  
-  .card {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  
-  .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
-  }
-  
-  .card h2 {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-    color: #333;
-  }
-  
-  .card p {
-    font-size: 1rem;
-    color: #666;
-  }
-  
+display: flex;
+flex-wrap: wrap; 
+justify-content: space-evenly;
+  gap: 20px;
+  padding: 20px;
+  background-color: #1e1e1e; /* Dark background for the container */
+  height: 100vh;
+}
+
+/* Category card styling */
+.card {
+  background-color: #2b2b2b; /* Matches the form container background */
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Slightly stronger shadow */
+  padding: 20px;
+  height: 100px;
+  width: 200px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  color: #ffffff; /* White text */
+}
+
+/* Hover effect for category cards */
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Enhanced shadow on hover */
+}
+
+/* Card title styling */
+.card h2 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: #00a3e0; /* Highlight color for titles */
+}
+
+/* Card description styling */
+.card p {
+  font-size: 1rem;
+  color: #cccccc; /* Light gray text for descriptions */
+}

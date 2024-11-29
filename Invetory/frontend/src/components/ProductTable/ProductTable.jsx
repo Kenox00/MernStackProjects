@@ -40,6 +40,9 @@ const ProductTable = () => {
   const handleUpdateClick = (productId) => {
     navigate(`/update-product/${productId}`);
   };
+  const handleDetailsClick = (productId) => {
+    navigate(`/products/${productId}`);
+  };
 
   const handleDeleteClick = async (productId) => {
     if (!window.confirm("Are you sure you want to delete this product?")) return;
@@ -69,7 +72,7 @@ const ProductTable = () => {
         <tbody>
           {products.map((product) => (
             <tr key={product._id}>
-              <td onClick={() => handleUpdateClick(product._id)}>{product.name}</td>
+              <td onClick={() => handleDetailsClick(product._id)}>{product.name}</td>
               <td>{product.category}</td>
               <td>{product.stock}</td>
               <td>

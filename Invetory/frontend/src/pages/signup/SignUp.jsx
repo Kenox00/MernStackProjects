@@ -3,17 +3,22 @@ import styles from './SignUp.module.css'; // Reusing the same CSS styles
 // Optional: Replace with a suitable image for SignUp
 import house from '../../assets/house.png'; // Optional: Replace with your preferred icon
 import { useSignUp } from '../../hooks/useSignUp';
+import { useNavigate } from 'react-router-dom';
 
 
 const SignUp = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const { signUp, error, isloading } = useSignUp()
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
       e.preventDefault(); 
 
       await signUp(email, password);
+  }
+  const handleLogin = ()=>{
+    navigate('/login');
   }
   return (
     <div className={styles.container}>
@@ -56,7 +61,7 @@ const SignUp = () => {
             <button type="submit" className={styles.button}>
               Sign Up
             </button>
-            <button type="button" className={styles.button}>
+            <button type="button" onClick={handleLogin} className={styles.button}>
               Back to Login
             </button>
           </div>
