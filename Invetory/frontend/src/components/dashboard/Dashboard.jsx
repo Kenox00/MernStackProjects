@@ -48,10 +48,6 @@ const Dashboard = () => {
           <FaBoxOpen className={styles.icon} />
           <p>Add Product</p>
         </div>
-        <div className={styles.card}>
-          <FaUser className={styles.icon} />
-          <p>Customer</p>
-        </div>
         <div className={styles.card} onClick={handleCategories}>
           <FaThLarge className={styles.icon} />
           <p>Categories</p>
