@@ -1,18 +1,18 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import styles from "./ProductDetailPage.module.css";
-import { stockInProduct, stockOutProduct } from "../../services/api"; // Import stock management functions
-import { AuthContext } from "../../context/AuthContext"; // Import AuthContext for user authentication
+import { stockInProduct, stockOutProduct } from "../../services/api";
+import { AuthContext } from "../../context/AuthContext";
 
 const ProductDetailPage = () => {
   const [product, setProduct] = useState({});
   const [stock, setStock] = useState(0);
-  const { user } = useContext(AuthContext); // Context to get authenticated user and token
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const productId = window.location.pathname.split("/")[2]; 
+        const productId = window.location.pathname.split("/")[2];
         const response = await axios.get(
           `http://localhost:4000/api/products/${productId}`,
           {
@@ -36,8 +36,8 @@ const ProductDetailPage = () => {
       alert("User is not authenticated.");
       return;
     }
-  
-    const data = { stock: amount }; // Changed from amount to stock
+
+    const data = { stock: amount };
     try {
       if (type === "in") {
         await stockInProduct(product._id, data, user.token);
@@ -59,16 +59,16 @@ const ProductDetailPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const amount = parseInt(e.target.amount.value, 10); // Parse the quantity input
-    const type = e.target.stockType.value; // Get the selected stock action
+    const amount = parseInt(e.target.amount.value, 10);
+    const type = e.target.stockType.value;
 
     if (!isNaN(amount) && amount > 0) {
-      handleStockUpdate(type, amount); // Perform stock update
+      handleStockUpdate(type, amount);
     } else {
       alert("Please enter a valid number!");
     }
 
-    e.target.reset(); // Reset the form after submission
+    e.target.reset();
   };
 
   return (
@@ -76,8 +76,12 @@ const ProductDetailPage = () => {
       {/* Left Section: Product Details */}
       <div className={styles.productDetails}>
         <h1>{product.name}</h1>
-        <p><strong>Category:</strong> {product.category}</p>
-        <p><strong>Stock Available:</strong> {stock}</p>
+        <p>
+          <strong>Category:</strong> {product.category}
+        </p>
+        <p>
+          <strong>Quantity Available:</strong> {stock}
+        </p>
       </div>
 
       {/* Right Section: Stock In/Out Form */}
@@ -99,12 +103,7 @@ const ProductDetailPage = () => {
                 defaultChecked
               />
               <label htmlFor="stockIn">Stock In</label>
-              <input
-                type="radio"
-                id="stockOut"
-                name="stockType"
-                value="out"
-              />
+              <input type="radio" id="stockOut" name="stockType" value="out" />
               <label htmlFor="stockOut">Stock Out</label>
             </div>
           </div>

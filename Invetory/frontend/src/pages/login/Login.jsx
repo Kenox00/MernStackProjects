@@ -58,10 +58,10 @@ const Login = () => {
             />
           </div>
           <div className={styles.buttonGroup}>
-            <button type="submit" disabled={isLoading}>
+            <button type="submit" disabled={isLoading} className={styles.button}>
               {isLoading ? 'Loading...' : 'Login'}
             </button>
-            <button type="button" onClick={handleSignup}> Go to Sign Up</button>
+            <button type="button" onClick={handleSignup} className={styles.button}> Go to Sign Up</button>
           </div>
           {error && <div className={styles.error}>{error}</div>}
         </form>
