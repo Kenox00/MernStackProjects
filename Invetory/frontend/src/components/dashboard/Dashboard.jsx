@@ -52,10 +52,6 @@ const Dashboard = () => {
           <FaThLarge className={styles.icon} />
           <p>Categories</p>
         </div>
-        <div className={styles.card}>
-          <FaUsers className={styles.icon} />
-          <p>Users</p>
-        </div>
       </div>
     </div>
     <ProductTable/>
