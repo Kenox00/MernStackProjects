@@ -78,3 +78,48 @@
 .deleteButton:hover {
   background-color: #e53935; /* Slightly darker hover red */
 }
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+.error {
+  color: #dc3545;
+  padding: 1rem;
+  margin: 1rem 0;
+  background-color: #fff;
+  border: 1px solid #dc3545;
+  border-radius: 4px;
+}
+
+.numeric {
+  text-align: right;
+  font-family: monospace;
+}
+
+.productName {
+  cursor: pointer;
+  color: #007bff;
+}
+
+.productName:hover {
+  text-decoration: underline;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.totalLabel {
+  text-align: right;
+  font-weight: bold;
+}
+
+.totalValue {
+  text-align: right;
+  font-weight: bold;
+  font-family: monospace;
+}

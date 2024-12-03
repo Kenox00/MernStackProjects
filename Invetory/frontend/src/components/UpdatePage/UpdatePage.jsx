@@ -1,21 +1,19 @@
 import React, { useState, useEffect } from "react";
 import styles from "./UpdatePage.module.css";
 import { useNavigate } from "react-router-dom";
-import { updateProduct } from "../../services/api"; // Import your API function
+import { getProductById, updateProduct } from "../../services/api";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
-import axios from "axios";
 
-
-const UpdatePage = ({ existingProductId }) => {
+const UpdatePage = () => {
   const navigate = useNavigate();
-  const { user } = useContext(AuthContext); // Get user token for authorization
+  const { user } = useContext(AuthContext);
   const [product, setProduct] = useState({
     name: "",
     category: "",
-    stock: "",
-    description: "",
-    _id: "",
+    stock: 0,
+    unitPrice: 0,
+    totalPrice: 0,
   });
 
   // Pre-fill the form with the existing product data
@@ -23,14 +21,11 @@ const UpdatePage = ({ existingProductId }) => {
     const productId = window.location.pathname.split("/")[2];
     const fetchProductDetails = async () => {
       try {
-        const response = await axios.get(`http://localhost:4000/api/products/${productId}`, {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        });
+        const response = await getProductById(productId, user.token);
         setProduct(response.data);
       } catch (error) {
         console.error("Failed to fetch product details:", error);
+        alert("Failed to fetch product details. Please try again.");
       }
     };
 
@@ -38,9 +33,18 @@ const UpdatePage = ({ existingProductId }) => {
       fetchProductDetails();
     }
   }, [user.token]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setProduct({ ...product, [name]: value });
+    
+    const newProduct = {...product, [name]: value};
+    
+    // Calculate total price when unit price or stock changes
+    if (name === 'unitPrice' || name === 'stock') {
+      newProduct.totalPrice = Number(newProduct.stock) * Number(newProduct.unitPrice);
+    }
+    
+    setProduct(newProduct);
   };
 
   const handleSubmit = async (e) => {
@@ -48,13 +52,17 @@ const UpdatePage = ({ existingProductId }) => {
     const productId = window.location.pathname.split("/")[2];
 
     try {
-      // Call the updateProduct API
-      const updatedProduct = await updateProduct(productId|| "", product, user.token);
+      const updatedProduct = await updateProduct(productId, {
+        name: product.name,
+        category: product.category,
+        stock: Number(product.stock),
+        unitPrice: Number(product.unitPrice),
+        totalPrice: Number(product.totalPrice)
+      }, user.token);
 
       console.log("Product Updated:", updatedProduct.data);
-
       alert("Product updated successfully!");
-      navigate("/"); // Redirect to the main page
+      navigate("/");
     } catch (error) {
       console.error("Error updating product:", error.response?.data || error.message);
       alert("Failed to update the product. Please try again.");
@@ -62,7 +70,7 @@ const UpdatePage = ({ existingProductId }) => {
   };
 
   const handleCancel = () => {
-    navigate("/"); // Redirect to the main page
+    navigate("/");
   };
 
   return (
@@ -113,6 +121,35 @@ const UpdatePage = ({ existingProductId }) => {
             />
           </div>
 
+          {/* Unit Price */}
+          <div className={styles.formGroup}>
+            <label htmlFor="unitPrice">Unit Price ($)</label>
+            <input
+              type="number"
+              id="unitPrice"
+              name="unitPrice"
+              value={product.unitPrice}
+              onChange={handleInputChange}
+              placeholder="Enter unit price"
+              min="0.01"
+              step="0.01"
+              required
+            />
+          </div>
+
+          {/* Total Price (Read-only) */}
+          <div className={styles.formGroup}>
+            <label htmlFor="totalPrice">Total Price ($)</label>
+            <input
+              type="number"
+              id="totalPrice"
+              name="totalPrice"
+              value={product.totalPrice}
+              readOnly
+              disabled
+            />
+          </div>
+
           {/* Buttons */}
           <div className={styles.buttonGroup}>
             <button
@@ -133,4 +170,3 @@ const UpdatePage = ({ existingProductId }) => {
 };
 
 export default UpdatePage;
-

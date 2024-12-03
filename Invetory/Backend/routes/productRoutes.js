@@ -9,11 +9,9 @@ const {
   getProductById,
   updateProduct,
   deleteProduct,
-  stockIn,
-  stockOut,
-  createCategory,
+  productIn,
+  productOut,
   getProductsByCategory,
-  getAllCategories,
 } = require("../controllers/productController");
 
 // CRUD Routes for Product
@@ -25,8 +23,10 @@ router.put("/:id", authenticate,  updateProduct);
 router.delete("/:id",  authenticate, deleteProduct);
 
 // Stock Routes
-router.post("/:id/stock-in", authenticate, stockIn);
-router.post("/:id/stock-out",authenticate,  stockOut);
+// router.post("/:id/stock-in", authenticate, stockIn);
+// router.post("/:id/stock-out",authenticate,  stockOut);
 
+router.post('/:id/product-in', authenticate, productIn);
+router.post('/:id/product-out', authenticate, productOut);
 
 module.exports = router;

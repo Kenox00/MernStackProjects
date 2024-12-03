@@ -1,45 +1,92 @@
 const Product = require('../models/product');
 const Category = require('../models/category');
+const Transaction = require('../models/transaction');
 
 // Add Stock
-exports.stockIn = async (req, res) => {
-  const { stock } = req.body;
+// exports.stockIn = async (req, res) => {
+//   const { stock } = req.body;
+//   const productId = req.params.id;
+
+//   if (!stock || stock <= 0) {
+//     return res.status(400).json({ error: 'Quantity must be a positive number.' });
+//   }
+
+//   try {
+//     const product = await Product.findById(productId);
+//     if (!product) return res.status(404).json({ error: 'Product not found.' });
+
+//     // Log the product to debug
+//     console.log('Product before stock update:', product);
+
+//     // Validate the category (optional, for debugging purposes)
+//     if (!product.category) {
+//       return res.status(400).json({ error: 'Product is missing a category. Please update the product.' });
+//     }
+
+//     // Update stock
+//     product.stock += parseInt(stock, 10);
+//     await product.save();
+
+//     res.json({ message: 'Stock increased successfully.', product });
+//   } catch (err) {
+//     console.error('Stock-in error:', err);
+//     res.status(500).json({ error: 'Internal server error.', details: err.message });
+//   }
+// };
+// exports.productIn = async (req, res) => {
+//   const productId = req.params.id;
+//   const { quantity, unitPrice, totalPrice } = req.body;
+
+//   if (!productId || quantity === undefined || !unitPrice || !totalPrice) {
+//     return res.status(400).json({ error: 'Product ID, quantity, unitPrice, and totalPrice are required.' });
+//   }
+
+//   try {
+//     const product = await Product.findById(productId);
+//     if (!product) {
+//       return res.status(404).json({ error: 'Product not found.' });
+//     }
+
+//     const dateTime = new Date(); // Get the current date and time
+//     const transaction = new Transaction({ product, dateTime, quantity, unitPrice, totalPrice, type: 'in' });
+//     await transaction.save();
+
+//     res.json({ message: 'Product in transaction created successfully.', transaction });
+//   } catch (err) {
+//     res.status(500).json({ error: 'Error creating product in transaction.', details: err.message });
+//   }
+// };
+
+// exports.productOut = async (req, res) => {
+//   const productId = req.params.id;
+//   const { quantity, unitPrice, totalPrice } = req.body;
+
+//   if (!productId || quantity === undefined || !unitPrice || !totalPrice) {
+//     return res.status(400).json({ error: 'Product ID, quantity, unitPrice, and totalPrice are required.' });
+//   }
+
+//   try {
+//     const product = await Product.findById(productId);
+//     if (!product) {
+//       return res.status(404).json({ error: 'Product not found.' });
+//     }
+
+//     const dateTime = new Date(); // Get the current date and time
+//     const transaction = new Transaction({ product, dateTime, quantity, unitPrice, totalPrice, type: 'out' });
+//     await transaction.save();
+
+//     res.json({ message: 'Product out transaction created successfully.', transaction });
+//   } catch (err) {
+//     res.status(500).json({ error: 'Error creating product out transaction.', details: err.message });
+//   }
+// };
+// productController.js - Updated productIn function
+exports.productIn = async (req, res) => {
   const productId = req.params.id;
+  const { quantity, unitPrice, totalPrice } = req.body;
 
-  if (!stock || stock <= 0) {
-    return res.status(400).json({ error: 'Quantity must be a positive number.' });
-  }
-
-  try {
-    const product = await Product.findById(productId);
-    if (!product) return res.status(404).json({ error: 'Product not found.' });
-
-    // Log the product to debug
-    console.log('Product before stock update:', product);
-
-    // Validate the category (optional, for debugging purposes)
-    if (!product.category) {
-      return res.status(400).json({ error: 'Product is missing a category. Please update the product.' });
-    }
-
-    // Update stock
-    product.stock += parseInt(stock, 10);
-    await product.save();
-
-    res.json({ message: 'Stock increased successfully.', product });
-  } catch (err) {
-    console.error('Stock-in error:', err);
-    res.status(500).json({ error: 'Internal server error.', details: err.message });
-  }
-};
-
-
-exports.stockOut = async (req, res) => {
-  const { stock } = req.body;
-  const productId = req.params.id;
-
-  if (!stock || stock <= 0) {
-    return res.status(400).json({ error: 'Quantity must be a positive number.' });
+  if (!productId || quantity === undefined || !unitPrice || !totalPrice) {
+    return res.status(400).json({ error: 'Product ID, quantity, unitPrice, and totalPrice are required.' });
   }
 
   try {
@@ -48,36 +95,130 @@ exports.stockOut = async (req, res) => {
       return res.status(404).json({ error: 'Product not found.' });
     }
 
-    // Log the product to debug
-    console.log('Product before stock update:', product);
+    // Update product stock and price
+    product.stock += parseInt(quantity, 10);
+    product.unitPrice = unitPrice;
+    product.totalPrice = product.stock * unitPrice;
 
-    // Validate the category (optional, for debugging purposes)
-    if (!product.category) {
-      return res.status(400).json({ error: 'Product is missing a category. Please update the product.' });
-    }
+    // Create transaction
+    const dateTime = new Date();
+    const transaction = new Transaction({ 
+      product: product._id, 
+      dateTime, 
+      quantity, 
+      unitPrice, 
+      totalPrice, 
+      type: 'in' 
+    });
 
-    // Check for sufficient stock
-    if (product.stock < stock) {
-      return res.status(400).json({ error: `Insufficient stock. Available stock: ${product.stock}` });
-    }
+    // Save both updates
+    await Promise.all([product.save(), transaction.save()]);
 
-    // Reduce stock
-    product.stock -= parseInt(stock, 10);
-    await product.save();
-
-    res.json({ message: 'Stock reduced successfully.', product });
+    res.json({ 
+      message: 'Product in transaction created successfully.', 
+      product,
+      transaction 
+    });
   } catch (err) {
-    console.error('Stock-out error:', err);
-    res.status(500).json({ error: 'Internal server error.', details: err.message });
+    res.status(500).json({ error: 'Error creating product in transaction.', details: err.message });
   }
 };
 
+// productController.js - Updated productOut function
+exports.productOut = async (req, res) => {
+  const productId = req.params.id;
+  const { quantity, unitPrice, totalPrice } = req.body;
+
+  if (!productId || quantity === undefined || !unitPrice || !totalPrice) {
+    return res.status(400).json({ error: 'Product ID, quantity, unitPrice, and totalPrice are required.' });
+  }
+
+  try {
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found.' });
+    }
+
+    // Check if there's enough stock
+    if (product.stock < quantity) {
+      return res.status(400).json({ error: 'Insufficient stock available.' });
+    }
+
+    // Update product stock and price
+    product.stock -= parseInt(quantity, 10);
+    product.unitPrice = unitPrice;
+    product.totalPrice = product.stock * unitPrice;
+
+    // Create transaction
+    const dateTime = new Date();
+    const transaction = new Transaction({ 
+      product: product._id, 
+      dateTime, 
+      quantity, 
+      unitPrice, 
+      totalPrice, 
+      type: 'out' 
+    });
+
+    // Save both updates
+    await Promise.all([product.save(), transaction.save()]);
+
+    res.json({ 
+      message: 'Product out transaction created successfully.', 
+      product,
+      transaction 
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Error creating product out transaction.', details: err.message });
+  }
+};
+
+// exports.stockOut = async (req, res) => {
+//   const { stock } = req.body;
+//   const productId = req.params.id;
+
+//   if (!stock || stock <= 0) {
+//     return res.status(400).json({ error: 'Quantity must be a positive number.' });
+//   }
+
+//   try {
+//     const product = await Product.findById(productId);
+//     if (!product) {
+//       return res.status(404).json({ error: 'Product not found.' });
+//     }
+
+//     // Log the product to debug
+//     console.log('Product before stock update:', product);
+
+//     // Validate the category (optional, for debugging purposes)
+//     if (!product.category) {
+//       return res.status(400).json({ error: 'Product is missing a category. Please update the product.' });
+//     }
+
+//     // Check for sufficient stock
+//     if (product.stock < stock) {
+//       return res.status(400).json({ error: `Insufficient stock. Available stock: ${product.stock}` });
+//     }
+
+//     // Reduce stock
+//     product.stock -= parseInt(stock, 10);
+//     await product.save();
+
+//     res.json({ message: 'Stock reduced successfully.', product });
+//   } catch (err) {
+//     console.error('Stock-out error:', err);
+//     res.status(500).json({ error: 'Internal server error.', details: err.message });
+//   }
+// };
+
 // Create a new product
 exports.createProduct = async (req, res) => {
-  const { name, stock, category } = req.body;
+  const { name, quantity, category, unitPrice, totalPrice } = req.body;
 
-  if (!name || stock === undefined || !category) {
-    return res.status(400).json({ error: 'Name, stock, and category are required.' });
+  if (!name || !quantity || !category || !unitPrice || !totalPrice) {
+    return res.status(400).json({ 
+      error: 'Name, quantity, category, unitPrice, and totalPrice are required.' 
+    });
   }
 
   try {
@@ -85,12 +226,33 @@ exports.createProduct = async (req, res) => {
     if (!existingCategory) {
       return res.status(400).json({ error: `Category '${category}' does not exist.` });
     }
+
+    const product = new Product({ 
+      name, 
+      stock: quantity, 
+      category: existingCategory.name, 
+      unitPrice, 
+      totalPrice 
+    });
     
-    // Create the product with the category name
-    const product = new Product({ name, stock, category: existingCategory.name });
-    await product.save();
-    
-    res.status(201).json({ message: 'Product created successfully.', product });
+    // Create initial stock-in transaction
+    const dateTime = new Date();
+    const transaction = new Transaction({ 
+      product: product._id, 
+      dateTime, 
+      quantity, 
+      unitPrice, 
+      totalPrice, 
+      type: 'in' 
+    });
+
+    await Promise.all([product.save(), transaction.save()]);
+
+    res.status(201).json({ 
+      message: 'Product created successfully with initial stock transaction.', 
+      product,
+      transaction 
+    });
   } catch (err) {
     res.status(500).json({ error: 'Error creating product.', details: err.message });
   }
@@ -120,7 +282,7 @@ exports.getProductById = async (req, res) => {
 
 // Update a product
 exports.updateProduct = async (req, res) => {
-  const { name, stock, category } = req.body;
+  const { name, quantity, category, unitPrice, totalPrice } = req.body;
   const productId = req.params.id;
 
   try {
@@ -129,10 +291,27 @@ exports.updateProduct = async (req, res) => {
 
     // Update product fields
     if (name) product.name = name;
-    if (stock !== undefined) product.stock = stock;
+    if (unitPrice) product.unitPrice = unitPrice;
+    if (totalPrice) product.totalPrice = totalPrice;
+
+    if (quantity !== undefined) {
+      const difference = quantity - product.stock;
+      if (difference !== 0) {
+        // Create a transaction for the stock adjustment
+        const transaction = new Transaction({
+          product: product._id,
+          dateTime: new Date(),
+          quantity: Math.abs(difference),
+          unitPrice: product.unitPrice,
+          totalPrice: Math.abs(difference) * product.unitPrice,
+          type: difference > 0 ? 'in' : 'out'
+        });
+        await transaction.save();
+        product.stock = quantity;
+      }
+    }
 
     if (category) {
-      // Check if the new category exists by its name
       const existingCategory = await Category.findOne({ name: category });
       if (!existingCategory) {
         return res.status(400).json({ error: `Category '${category}' does not exist.` });
@@ -141,12 +320,14 @@ exports.updateProduct = async (req, res) => {
     }
 
     await product.save();
-    res.json({ message: 'Product updated successfully.', product });
+    res.json({ 
+      message: 'Product updated successfully.', 
+      product 
+    });
   } catch (err) {
     res.status(500).json({ error: 'Error updating product.', details: err.message });
   }
 };
-
 
 // Delete a product
 exports.deleteProduct = async (req, res) => {
