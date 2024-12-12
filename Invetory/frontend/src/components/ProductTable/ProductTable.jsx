@@ -63,7 +63,7 @@ const ProductTable = () => {
   const formatCurrency = (number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'RWF'
     }).format(number);
   };
 
@@ -125,7 +125,7 @@ const ProductTable = () => {
                 products.reduce((sum, product) => sum + product.totalPrice, 0)
               )}
             </td>
-            <td></td>
+          <td></td>
           </tr>
         </tfoot>
       </table>
